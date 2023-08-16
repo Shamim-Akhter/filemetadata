@@ -6,6 +6,8 @@ require('dotenv').config()
 
 var app = express();
 
+const port = process.env.PORT || 3000;
+
 app.use(cors());
 app.use('/public', express.static(process.cwd() + '/public'));
 
@@ -27,6 +29,9 @@ app.post('/api/fileanalyse',function(req,res,next){
 }, function(req,res){
   
       const fileInformation=req.file;
+      if(fileInformation === undefined){
+        res.status(400).send("Please select/choose the file first before uploading");
+    }
       res.status(201).send({
       name:fileInformation.originalname,
       type:fileInformation.mimetype,
@@ -35,8 +40,11 @@ app.post('/api/fileanalyse',function(req,res,next){
 }
 )
 
+app.use((req, res, next) => {
+  res.status(404).sendFile(__dirname+'/views/404.html');
+});
 
-const port = process.env.PORT || 3000;
+
 app.listen(port, function () {
   console.log('Your app is listening on port ' + port)
 });
